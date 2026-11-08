@@ -104,7 +104,7 @@ jobs:
           TF_STATE_BUCKET: ${{ vars.TF_STATE_BUCKET }}
         run: |
           # Helm provider needs the chart repos in the local Helm cache ("no cached repo found" otherwise)
-          ../../scripts/helm-repos.sh
+          bash ../../scripts/helm-repos.sh
           bucket="${TF_STATE_BUCKET:-telugu-pickles-tfstate-$(aws sts get-caller-identity --query Account --output text)}"
           terraform init -backend-config="bucket=${bucket}"
 
@@ -159,7 +159,7 @@ jobs:
           TF_STATE_BUCKET: ${{ vars.TF_STATE_BUCKET }}
         run: |
           # Helm provider needs the chart repos in the local Helm cache ("no cached repo found" otherwise)
-          ../../scripts/helm-repos.sh
+          bash ../../scripts/helm-repos.sh
           bucket="${TF_STATE_BUCKET:-telugu-pickles-tfstate-$(aws sts get-caller-identity --query Account --output text)}"
           terraform init -backend-config="bucket=${bucket}"
 
@@ -221,7 +221,7 @@ jobs:
           TF_STATE_BUCKET: ${{ vars.TF_STATE_BUCKET }}
         run: |
           # Helm provider needs the chart repos in the local Helm cache ("no cached repo found" otherwise)
-          ../../scripts/helm-repos.sh
+          bash ../../scripts/helm-repos.sh
           bucket="${TF_STATE_BUCKET:-telugu-pickles-tfstate-$(aws sts get-caller-identity --query Account --output text)}"
           terraform init -backend-config="bucket=${bucket}"
 
@@ -229,7 +229,7 @@ jobs:
       # controllers inside the cluster, not by Terraform. Remove them while the controllers
       # still run, otherwise they are orphaned and block the VPC deletion / keep costing money.
       - name: Remove Kubernetes-created AWS resources
-        run: ../../scripts/pre-destroy.sh "$(terraform output -raw cluster_name 2>/dev/null || echo telugu-pickles-eks)" "$AWS_REGION"
+        run: bash ../../scripts/pre-destroy.sh "$(terraform output -raw cluster_name 2>/dev/null || echo telugu-pickles-eks)" "$AWS_REGION"
 
       - name: terraform destroy
         run: terraform destroy -auto-approve -lock-timeout=10m
