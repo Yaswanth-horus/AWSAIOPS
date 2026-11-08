@@ -221,7 +221,7 @@ resource "helm_release" "monitoring" {
 resource "helm_release" "argocd" {
   name       = "argocd"
   namespace  = kubernetes_namespace_v1.argocd.metadata[0].name
-  repository = "https://argoproj.github.io/argo-helm"
+  repository = "oci://ghcr.io/argoproj/argo-helm"
   chart      = "argo-cd"
   version    = "10.14.0"
   timeout    = 600
