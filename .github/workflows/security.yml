@@ -40,11 +40,18 @@ jobs:
           fetch-depth: 0 # full history: a secret deleted later is still leaked
 
       - name: Install gitleaks (checksum verified)
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          base="https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}"
           file="gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
-          curl -sSfL --retry 3 --retry-delay 5 --retry-all-errors -o "$file" "$base/$file"
-          curl -sSfL --retry 3 --retry-delay 5 --retry-all-errors "$base/gitleaks_${GITLEAKS_VERSION}_checksums.txt" | grep " $file\$" | sha256sum -c -
+          sums="gitleaks_${GITLEAKS_VERSION}_checksums.txt"
+          for i in 1 2 3 4; do
+            gh release download "v${GITLEAKS_VERSION}" --repo gitleaks/gitleaks \
+              --pattern "$file" --pattern "$sums" --clobber && break
+            echo "Download failed (attempt $i), retrying in 10s..."
+            sleep 10
+          done
+          grep " $file\$" "$sums" | sha256sum -c -
           tar -xzf "$file" gitleaks && sudo mv gitleaks /usr/local/bin/
 
       - name: Scan
