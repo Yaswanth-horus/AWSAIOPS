@@ -38,6 +38,7 @@ repositories = [
 #   Find it with:  aws sts get-caller-identity --query Arn --output text
 cluster_admin_arns = [
   "arn:aws:iam::477170636144:user/Yashu",
+  "arn:aws:iam::477170636144:user/terra",
 ]
 
 # ---- GitOps -------------------------------------------------------------------
