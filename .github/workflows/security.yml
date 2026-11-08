@@ -1,4 +1,4 @@
-# Security scan — replaces SonarQube for this project.
+# Security scan: replaces SonarQube for this project.
 #   Gitleaks : secrets (keys, tokens, passwords) anywhere in the git history  -> FAILS the run
 #   Trivy fs : known CRITICAL vulnerabilities with a fix in npm dependencies  -> FAILS the run
 #   Trivy    : Kubernetes / Terraform / Dockerfile misconfigurations           -> report only
@@ -32,7 +32,7 @@ env:
 
 jobs:
   gitleaks:
-    name: Gitleaks — secrets in git history
+    name: Gitleaks - secrets in git history
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -43,8 +43,8 @@ jobs:
         run: |
           base="https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}"
           file="gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
-          curl -sSfL -o "$file" "$base/$file"
-          curl -sSfL "$base/gitleaks_${GITLEAKS_VERSION}_checksums.txt" | grep " $file\$" | sha256sum -c -
+          curl -sSfL --retry 3 --retry-delay 5 --retry-all-errors -o "$file" "$base/$file"
+          curl -sSfL --retry 3 --retry-delay 5 --retry-all-errors "$base/gitleaks_${GITLEAKS_VERSION}_checksums.txt" | grep " $file\$" | sha256sum -c -
           tar -xzf "$file" gitleaks && sudo mv gitleaks /usr/local/bin/
 
       - name: Scan
@@ -61,7 +61,7 @@ jobs:
           category: gitleaks
 
   trivy:
-    name: Trivy — dependencies, secrets, IaC
+    name: Trivy - dependencies, secrets, IaC
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
